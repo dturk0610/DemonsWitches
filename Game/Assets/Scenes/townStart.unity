@@ -23351,6 +23351,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cam: {fileID: 1981608046}
   moveSpeed: 1
+  jumpStrength: 500
   maxVel: 10
 --- !u!1 &1300226775
 GameObject:
