@@ -27,7 +27,7 @@ public class Movement : MonoBehaviour
             transform.localScale = new Vector3( Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z );
         }
         Vector2 currVel = rb2D.velocity;
-        rb2D.velocity = ( currVel.magnitude > maxVel ) ? currVel.normalized * maxVel : currVel;
+        rb2D.velocity = ( currVel.magnitude > maxVel ) ? Vector2.Lerp( currVel.normalized * maxVel, currVel, Time.deltaTime ) : currVel;
 
         anim.SetFloat( "Speed", Mathf.Abs( rb2D.velocity.magnitude ) );
 
@@ -36,6 +36,9 @@ public class Movement : MonoBehaviour
             grounded = false;
         }
 
+    }
+
+    void FixedUpdate(){
         cam.position = new Vector3( this.transform.position.x, cam.position.y, cam.position.z );
     }
 
