@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Movement : MonoBehaviour
 {
@@ -9,7 +10,8 @@ public class Movement : MonoBehaviour
     public float maxVel = 10;
     public Animator anim;
     Rigidbody2D rb2D;
-    bool grounded = true;
+    public bool grounded = true;
+    Vector2 moveDir = new Vector2( 0, 0 );
     // Start is called before the first frame update
     void Start()
     {
@@ -19,30 +21,35 @@ public class Movement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if ( Input.GetKey( KeyCode.A ) ){
-            rb2D.AddForce( new Vector2( -moveSpeed, 0 ));
-            transform.localScale = new Vector3( -Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z );
-        }else if ( Input.GetKey( KeyCode.D ) ){
-            rb2D.AddForce( new Vector2( moveSpeed, 0 ));
-            transform.localScale = new Vector3( Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z );
-        }
-        Vector2 currVel = rb2D.velocity;
-        rb2D.velocity = ( currVel.magnitude > maxVel ) ? Vector2.Lerp( currVel.normalized * maxVel, currVel, Time.deltaTime ) : currVel;
+        
+        rb2D.velocity = new Vector2( moveDir.x*moveSpeed, rb2D.velocity.y );
+        float dirXAbs = Mathf.Abs(moveDir.x);
+        if ( dirXAbs > 0 )
+            transform.localScale = new Vector3( moveDir.x/dirXAbs*Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z );
 
         anim.SetFloat( "Speed", Mathf.Abs( rb2D.velocity.magnitude ) );
-
-        if ( Input.GetKeyDown( KeyCode.Space ) && grounded ){
-            rb2D.AddForce( new Vector2( 0, jumpStrength ) );
-            grounded = false;
-        }
-
     }
 
     void FixedUpdate(){
         cam.position = new Vector3( this.transform.position.x, cam.position.y, cam.position.z );
     }
+    public void Move(InputAction.CallbackContext context)
+    {
+        moveDir = context.ReadValue<Vector2>();
+    }
+    
+    public void Jump(InputAction.CallbackContext context)
+    {
+        if ( !grounded ) return;
+        rb2D.velocity = new Vector2( rb2D.velocity.x, jumpStrength );
+        grounded = false;
+    }
+
+
 
     private void OnCollisionEnter2D( Collision2D other ) {
-        grounded = true;
+        if ( other.gameObject.tag == "ground"){
+            grounded = true;
+        }
     }
 }
