@@ -7,6 +7,7 @@ public class Movement : MonoBehaviour
 {
     public Transform cam;
     public float moveSpeed = 10, jumpStrength  = 10;
+    float sprintVal = 1;
     public float maxVel = 10;
     public Animator anim;
     Rigidbody2D rb2D;
@@ -22,7 +23,7 @@ public class Movement : MonoBehaviour
     void Update()
     {
         
-        rb2D.velocity = new Vector2( moveDir.x*moveSpeed, rb2D.velocity.y );
+        rb2D.velocity = new Vector2( moveDir.x*moveSpeed*sprintVal, rb2D.velocity.y );
         float dirXAbs = Mathf.Abs(moveDir.x);
         if ( dirXAbs > 0 )
             transform.localScale = new Vector3( moveDir.x/dirXAbs*Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z );
@@ -45,7 +46,11 @@ public class Movement : MonoBehaviour
         grounded = false;
     }
 
-
+    public void Sprint(InputAction.CallbackContext context){
+        float isSprinting = context.ReadValue<float>();
+        if ( context.phase == InputActionPhase.Performed) isSprinting = 0;
+        sprintVal = 2 / ( 2 - isSprinting);
+    }
 
     private void OnCollisionEnter2D( Collision2D other ) {
         if ( other.gameObject.tag == "ground"){
