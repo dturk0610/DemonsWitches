@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 public class Movement : MonoBehaviour
 {
     public Transform cam;
-    public float moveSpeed = 10, jumpStrength  = 10;
+    public float moveSpeed = 10, jumpStrength  = 10, camHeight = 5;
     float sprintVal = 1;
     public float maxVel = 10;
     public Animator anim;
@@ -32,7 +32,7 @@ public class Movement : MonoBehaviour
     }
 
     void FixedUpdate(){
-        cam.position = new Vector3( this.transform.position.x, cam.position.y, cam.position.z );
+        cam.position = new Vector3( this.transform.position.x, this.transform.position.y + camHeight, cam.position.z );
     }
     public void Move(InputAction.CallbackContext context)
     {
@@ -41,7 +41,7 @@ public class Movement : MonoBehaviour
     
     public void Jump(InputAction.CallbackContext context)
     {
-        if ( !grounded ) return;
+        if ( !grounded || context.phase == InputActionPhase.Canceled ) return;
         rb2D.velocity = new Vector2( rb2D.velocity.x, jumpStrength );
         grounded = false;
     }
@@ -53,7 +53,7 @@ public class Movement : MonoBehaviour
     }
 
     private void OnCollisionEnter2D( Collision2D other ) {
-        if ( other.gameObject.tag == "ground"){
+        if ( other.gameObject.tag == "ground" || other.gameObject.tag == "stairs" ){
             grounded = true;
         }
     }
