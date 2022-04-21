@@ -6,6 +6,9 @@ TagManager:
   tags:
   - ground
   - stairs
+  - FloorToStair
+  - StairToFloor
+  - enemy
   layers:
   - Default
   - TransparentFX
@@ -15,10 +18,10 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - Stairs
+  - Floor
+  - Enemy
   - 
   - 
   - 

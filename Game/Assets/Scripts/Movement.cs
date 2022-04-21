@@ -13,48 +13,98 @@ public class Movement : MonoBehaviour
     Rigidbody2D rb2D;
     public bool grounded = true;
     Vector2 moveDir = new Vector2( 0, 0 );
+    bool inStairsTrigger = false;
+    GameObject currGround;
+    string stairTriggerTag = "";
+    bool stairInteract = false;
+
+    public float hurtCoolDownStartVal = 2;
+    public float hurtCoolDown = 2;
+    bool hit = false;
     // Start is called before the first frame update
     void Start()
     {
+        Application.targetFrameRate = 60;
         rb2D = this.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        
+    void Update(){
+
         rb2D.velocity = new Vector2( moveDir.x*moveSpeed*sprintVal, rb2D.velocity.y );
         float dirXAbs = Mathf.Abs(moveDir.x);
-        if ( dirXAbs > 0 )
+        if ( dirXAbs > 0 ){
             transform.localScale = new Vector3( moveDir.x/dirXAbs*Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z );
+        }
+        if ( stairInteract && inStairsTrigger && grounded 
+            && stairTriggerTag == "StairToFloor" ){
+            Physics2D.IgnoreLayerCollision( 8, 9, true );
+        } else if ( stairInteract && inStairsTrigger && grounded 
+            && stairTriggerTag == "FloorToStair" ){
+            Physics2D.IgnoreLayerCollision( 8, 10, true );
+        }   
 
         anim.SetFloat( "Speed", Mathf.Abs( rb2D.velocity.magnitude ) );
+        if ( hit ){
+            hurtCoolDown -= Time.deltaTime;
+            if ( hurtCoolDown <= 0 ){
+                hurtCoolDown = hurtCoolDownStartVal;
+                hit = false;
+                Physics2D.IgnoreLayerCollision( 8, 11, false );
+            }
+        }
     }
 
     void FixedUpdate(){
         cam.position = new Vector3( this.transform.position.x, this.transform.position.y + camHeight, cam.position.z );
     }
-    public void Move(InputAction.CallbackContext context)
+    public void Move( InputAction.CallbackContext context )
     {
         moveDir = context.ReadValue<Vector2>();
     }
+
+    public void StairInteract( InputAction.CallbackContext context ){
+        switch ( context.phase ){
+            case InputActionPhase.Started: stairInteract = true; break;
+            case InputActionPhase.Canceled: stairInteract = false; break;
+
+        }
+    }
     
-    public void Jump(InputAction.CallbackContext context)
+    public void Jump( InputAction.CallbackContext context )
     {
         if ( !grounded || context.phase == InputActionPhase.Canceled ) return;
         rb2D.velocity = new Vector2( rb2D.velocity.x, jumpStrength );
         grounded = false;
     }
 
-    public void Sprint(InputAction.CallbackContext context){
+    public void Sprint( InputAction.CallbackContext context ){
         float isSprinting = context.ReadValue<float>();
-        if ( context.phase == InputActionPhase.Performed) isSprinting = 0;
+        if ( context.phase == InputActionPhase.Performed ) isSprinting = 0;
         sprintVal = 2 / ( 2 - isSprinting);
     }
 
     private void OnCollisionEnter2D( Collision2D other ) {
         if ( other.gameObject.tag == "ground" || other.gameObject.tag == "stairs" ){
+            currGround = other.gameObject;
             grounded = true;
+            return;
         }
+        if ( other.gameObject.tag == "enemy" ){
+            //Deal Damage
+            hit = true;
+            Physics2D.IgnoreLayerCollision( 8, 11, true );
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other) {
+        inStairsTrigger = true;
+        stairTriggerTag = other.tag;
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        inStairsTrigger = false;
+        Physics2D.IgnoreLayerCollision( 8, 9, false );
+        Physics2D.IgnoreLayerCollision( 8, 10, false );
     }
 }
