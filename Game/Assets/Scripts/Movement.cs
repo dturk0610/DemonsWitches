@@ -16,16 +16,18 @@ public class Movement : MonoBehaviour
     bool inStairsTrigger = false;
     GameObject currGround;
     string stairTriggerTag = "";
-    bool stairInteract = false;
+    bool stairInteract = false, canHide = false;
 
     public float hurtCoolDownStartVal = 2;
     public float hurtCoolDown = 2;
-    bool hit = false;
+    bool hit = false, isCrouching = false;
+    SpriteRenderer thisRenderer;
     // Start is called before the first frame update
     void Start()
     {
         Application.targetFrameRate = 60;
-        rb2D = this.GetComponent<Rigidbody2D>();
+        rb2D = GetComponent<Rigidbody2D>();
+        thisRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
@@ -35,6 +37,7 @@ public class Movement : MonoBehaviour
         float dirXAbs = Mathf.Abs(moveDir.x);
         if ( dirXAbs > 0 ){
             transform.localScale = new Vector3( moveDir.x/dirXAbs*Mathf.Abs(transform.localScale.x), transform.localScale.y, transform.localScale.z );
+            if ( isCrouching ) EndCrouch();
         }
         if ( stairInteract && inStairsTrigger && grounded 
             && stairTriggerTag == "StairToFloor" ){
@@ -45,6 +48,7 @@ public class Movement : MonoBehaviour
         }   
 
         anim.SetFloat( "Speed", Mathf.Abs( rb2D.velocity.magnitude ) );
+
         if ( hit ){
             hurtCoolDown -= Time.deltaTime;
             if ( hurtCoolDown <= 0 ){
@@ -71,6 +75,31 @@ public class Movement : MonoBehaviour
         }
     }
     
+    public void Crouch( InputAction.CallbackContext context ){
+        switch ( context.phase ){
+            case InputActionPhase.Started: 
+                if ( canHide && !isCrouching ) BeginCrouch(); 
+                break;
+            case InputActionPhase.Canceled:
+                if ( isCrouching ) EndCrouch();
+                break;
+        }
+    }
+
+    void BeginCrouch(){
+        anim.SetBool( "NeedCrouch", true );
+        thisRenderer.sortingOrder = 2;
+        Physics2D.IgnoreLayerCollision( 8, 11, true );
+        isCrouching = true;
+    }
+
+    void EndCrouch(){
+        anim.SetBool( "NeedCrouch", false );
+        thisRenderer.sortingOrder = 4;
+        Physics2D.IgnoreLayerCollision( 8, 11, false );
+        isCrouching = false;
+    }
+
     public void Jump( InputAction.CallbackContext context )
     {
         if ( !grounded || context.phase == InputActionPhase.Canceled ) return;
@@ -85,26 +114,43 @@ public class Movement : MonoBehaviour
     }
 
     private void OnCollisionEnter2D( Collision2D other ) {
-        if ( other.gameObject.tag == "ground" || other.gameObject.tag == "stairs" ){
-            currGround = other.gameObject;
-            grounded = true;
-            return;
-        }
-        if ( other.gameObject.tag == "enemy" ){
-            //Deal Damage
-            hit = true;
-            Physics2D.IgnoreLayerCollision( 8, 11, true );
+        switch( other.gameObject.tag ){
+            case "ground":
+            case "stairs":
+                currGround = other.gameObject;
+                grounded = true;
+                break;
+            case "enemy":
+                hit = true;
+                Physics2D.IgnoreLayerCollision( 8, 11, true );
+                break;
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other) {
-        inStairsTrigger = true;
-        stairTriggerTag = other.tag;
+        switch( other.gameObject.tag ){
+            case "FloorToStair":
+            case "StairToFloor":
+                inStairsTrigger = true;
+                stairTriggerTag = other.tag;
+                break;
+            case "hideLoc":
+                canHide = true;
+                break;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other) {
-        inStairsTrigger = false;
-        Physics2D.IgnoreLayerCollision( 8, 9, false );
-        Physics2D.IgnoreLayerCollision( 8, 10, false );
+        switch( other.gameObject.tag ){
+            case "FloorToStair":
+            case "StairToFloor":
+                inStairsTrigger = false;
+                Physics2D.IgnoreLayerCollision( 8, 9, false );
+                Physics2D.IgnoreLayerCollision( 8, 10, false );
+                break;
+            case "hideLoc":
+                canHide = false;
+                break;
+        }
     }
 }

@@ -9,6 +9,7 @@ TagManager:
   - FloorToStair
   - StairToFloor
   - enemy
+  - hideLoc
   layers:
   - Default
   - TransparentFX

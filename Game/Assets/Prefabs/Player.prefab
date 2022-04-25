@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 1608219190156621397}
   - component: {fileID: 1608219190156621396}
   - component: {fileID: 1608219190156621395}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 1608219190156621418}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 7.27, z: 0}
-  m_LocalScale: {x: 10, y: 10, z: 1}
+  m_LocalScale: {x: 13, y: 13, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -77,9 +77,9 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 1
+  m_SortingOrder: 4
   m_Sprite: {fileID: -1164825975, guid: 1bb769efe6c7f0e448b05e3f48a541ed, type: 3}
-  m_Color: {r: 0.53207546, g: 0.74249715, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -125,7 +125,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &1608219190156621397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,12 +139,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 0}
-  moveSpeed: 5
+  moveSpeed: 10
   jumpStrength: 20
-  camHeight: 30
+  camHeight: 5
   maxVel: 1
   anim: {fileID: 1608219190156621396}
   grounded: 1
+  hurtCoolDownStartVal: 2
+  hurtCoolDown: 2
 --- !u!95 &1608219190156621396
 Animator:
   serializedVersion: 4
@@ -286,6 +288,38 @@ MonoBehaviour:
         m_CallState: 2
     m_ActionId: be12726b-b7c9-488a-bae8-a91c93d9b77a
     m_ActionName: Player/Sprint[/Keyboard/leftShift]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1608219190156621397}
+        m_TargetAssemblyTypeName: Movement, Assembly-CSharp
+        m_MethodName: StairInteract
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 4f9d2f71-7d47-4b5a-a7d6-e9ad5394567b
+    m_ActionName: Player/StairInteract[/Mouse/rightButton]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1608219190156621397}
+        m_TargetAssemblyTypeName: Movement, Assembly-CSharp
+        m_MethodName: Crouch
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 45a90da9-5e08-4f13-a362-218fa115f32f
+    m_ActionName: Player/Hide[/Mouse/leftButton]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player
