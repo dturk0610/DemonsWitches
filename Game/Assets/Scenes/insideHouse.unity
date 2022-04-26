@@ -112754,9 +112754,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da0383eb4b1df4ef9803f2dff630297d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  totalHealth: 100
+  maxHealth: 100
   currHealth: 100
+  newHealth: 100
   dmgAmount: 10
+  healthIndicator: {fileID: 922615210}
+  speed: 1
 --- !u!1 &1739692651
 GameObject:
   m_ObjectHideFlags: 0
