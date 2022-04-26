@@ -185,7 +185,7 @@ public class ChaseState : EnemyAIState{
         anim.SetFloat( "Speed", .5f );
         rb2D.velocity = new Vector2( baseMoveSpeed*faceDir, rb2D.velocity.y );
         
-        if ( diff.magnitude > Mathf.Abs( viewRad*trans.localScale.x ) ){
+        if ( diff.magnitude > Mathf.Abs( viewRad*trans.localScale.x ) || target.gameObject.layer == 12 ){
             IdleState idleState = new IdleState( trans, rb2D, anim, viewRad, stateChanger, ground, leftStairs, rightStairs );
             stateChanger.Invoke(idleState);
        }
@@ -195,6 +195,10 @@ public class ChaseState : EnemyAIState{
         switch( other.gameObject.tag ){
             case "ground": break;
             case "stairs": break;
+            case "Player": 
+                IdleState idleState = new IdleState( trans, rb2D, anim, viewRad, stateChanger, ground, leftStairs, rightStairs );
+                stateChanger.Invoke(idleState);
+                break;
         }
     }
 

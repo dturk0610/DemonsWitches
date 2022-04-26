@@ -28,6 +28,7 @@ public class Movement : MonoBehaviour
         Application.targetFrameRate = 60;
         rb2D = GetComponent<Rigidbody2D>();
         thisRenderer = GetComponent<SpriteRenderer>();
+        Physics2D.IgnoreLayerCollision( 12, 11, true );
     }
 
     // Update is called once per frame
@@ -88,15 +89,15 @@ public class Movement : MonoBehaviour
 
     void BeginCrouch(){
         anim.SetBool( "NeedCrouch", true );
-        thisRenderer.sortingOrder = 2;
-        Physics2D.IgnoreLayerCollision( 8, 11, true );
+        thisRenderer.sortingOrder = -4;
+        gameObject.layer = 12;
         isCrouching = true;
     }
 
     void EndCrouch(){
         anim.SetBool( "NeedCrouch", false );
-        thisRenderer.sortingOrder = 4;
-        Physics2D.IgnoreLayerCollision( 8, 11, false );
+        thisRenderer.sortingOrder = 2;
+        gameObject.layer = 8;
         isCrouching = false;
     }
 
