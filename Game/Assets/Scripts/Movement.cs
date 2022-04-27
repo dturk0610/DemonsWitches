@@ -17,7 +17,10 @@ public class Movement : MonoBehaviour
     GameObject currGround;
     string stairTriggerTag = "";
     bool stairInteract = false, canHide = false;
-
+    public float hideLength = 100;
+    public Transform hideIndicator;
+    public float hideReduce = 5;
+    float origHideIndLength;
     public float hurtCoolDownStartVal = 2;
     public float hurtCoolDown = 2;
     bool hit = false, isCrouching = false;
@@ -29,10 +32,12 @@ public class Movement : MonoBehaviour
         rb2D = GetComponent<Rigidbody2D>();
         thisRenderer = GetComponent<SpriteRenderer>();
         Physics2D.IgnoreLayerCollision( 12, 11, true );
+        origHideIndLength = hideIndicator.localScale.x;
     }
 
     // Update is called once per frame
     void Update(){
+        float deltaTime = Time.deltaTime;
 
         rb2D.velocity = new Vector2( moveDir.x*moveSpeed*sprintVal, rb2D.velocity.y );
         float dirXAbs = Mathf.Abs(moveDir.x);
@@ -51,12 +56,24 @@ public class Movement : MonoBehaviour
         anim.SetFloat( "Speed", Mathf.Abs( rb2D.velocity.magnitude ) );
 
         if ( hit ){
-            hurtCoolDown -= Time.deltaTime;
+            hurtCoolDown -= deltaTime;
             if ( hurtCoolDown <= 0 ){
                 hurtCoolDown = hurtCoolDownStartVal;
                 hit = false;
                 Physics2D.IgnoreLayerCollision( 8, 11, false );
             }
+        }
+
+        if ( isCrouching ){
+            hideLength -= deltaTime*hideReduce;
+            if (hideLength <= 0){
+                EndCrouch();
+            } else {
+                hideIndicator.localScale = Vector3.Lerp(hideIndicator.localScale, new Vector3( hideLength/100*origHideIndLength, hideIndicator.localScale.y, hideIndicator.localScale.z ),  deltaTime*4.0f );
+            }
+        } else if ( hideLength < 100 ) {
+            hideLength += deltaTime*hideReduce*.5f;
+            hideIndicator.localScale = Vector3.Lerp(hideIndicator.localScale, new Vector3( hideLength/100*origHideIndLength, hideIndicator.localScale.y, hideIndicator.localScale.z ), deltaTime*4.0f );
         }
     }
 
