@@ -89,14 +89,14 @@ public class Movement : MonoBehaviour
 
     void BeginCrouch(){
         anim.SetBool( "NeedCrouch", true );
-        thisRenderer.sortingOrder = -4;
+        thisRenderer.sortingOrder = 3;
         gameObject.layer = 12;
         isCrouching = true;
     }
 
     void EndCrouch(){
         anim.SetBool( "NeedCrouch", false );
-        thisRenderer.sortingOrder = 2;
+        thisRenderer.sortingOrder = 6;
         gameObject.layer = 8;
         isCrouching = false;
     }
