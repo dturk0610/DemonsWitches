@@ -722,7 +722,7 @@ GameObject:
   - component: {fileID: 416080232}
   - component: {fileID: 416080235}
   - component: {fileID: 416080234}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: ErLangScale
   m_TagString: Untagged
   m_Icon: {fileID: 0}

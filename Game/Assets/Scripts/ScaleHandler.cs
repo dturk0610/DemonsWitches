@@ -16,6 +16,7 @@ public class ScaleHandler : MonoBehaviour
         transform.localPosition = new Vector3( possibleLocations[spawnLoc].x, possibleLocations[spawnLoc].y, 0 );
         originalTime = waitTime;
         originalColor = GetComponent<Renderer>().material.color;
+        Physics2D.IgnoreLayerCollision( 13, 11, true );
     }
 
     // Update is called once per frame
